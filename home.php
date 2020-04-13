@@ -1,8 +1,6 @@
 <?php
 include_once 'config.php';
 
-
-
 // ---------------- SUBMIT THE FORM
 
 //check if form is submitted
@@ -10,6 +8,7 @@ if (isset($_POST['submit']))
 {
     $filename = $_FILES['file1']['name'];
     $ideaname = $_POST['ideaName'];
+    $tags = $_POST['tags'];
 //upload file
 if($filename != '')
 {
@@ -25,7 +24,7 @@ if (in_array($ext, $allowed))
     move_uploaded_file($_FILES['file1']['tmp_name'],($path . $filename));
 
 // insert file details into database
-    $sql = "INSERT INTO project_files(ideaName, filename, created) VALUES('$ideaname', '$filename', '$created')";
+    $sql = "INSERT INTO project_files(ideaName, filename, created, tags) VALUES('$ideaname', '$filename', '$created', '$tags')";
     mysqli_query($con, $sql);
 
     header("Location: home.php?st=success");
@@ -52,6 +51,18 @@ include 'header.php';
 // fetch files
 $sql = "select * from project_files";
 $result = mysqli_query($con, $sql);
+
+// fetch tag names
+$tagsql = "select distinct tags from project_files";
+$tagresult = mysqli_query($con, $tagsql);
+
+if( isset($_GET['tagname']) ){
+    $tname = mysqli_real_escape_string($con, htmlspecialchars($_GET['tagname']));
+    $sql = "SELECT * FROM project_files WHERE tags = '$tname'";
+}
+$result = $con->query($sql);
+
+
 ?>
 
 <style>
@@ -74,8 +85,10 @@ $result = mysqli_query($con, $sql);
 <div class="row">
     <div class="col-xs-12">
         <form action="home.php" method="post" enctype="multipart/form-data">
-            <legend>Project About:</legend><br>
+            <legend>Project About:</legend>
             <textarea name="ideaName" required></textarea><br><br>
+            <legend>Add a tag</legend>
+            <textarea name="tags" required></textarea><br><br>
             <legend>Upload Project Details*</legend><br>
             <div class="form-group">
                 <input type="file" name="file1" required/>
@@ -102,6 +115,33 @@ $result = mysqli_query($con, $sql);
     
 <div class="uploadSection2">
 <div class="row">
+<div>
+    <table class="table">
+        <h1>Tags</h1>
+        <thead>
+            
+        <?php
+            while($row2 = mysqli_fetch_array($tagresult)) { ?>
+            
+            <?php echo $row2['tags']; ?>,  
+            
+        <?php } ?>
+            
+<!--
+        <tr>
+            <th>car</th>
+        </tr>
+-->
+        </thead><br>
+        <h6><a href="/home.php">clear tag result</a></h6>
+    </table><br>
+        <form action="" method="GET">
+        <input type="text" placeholder="Type above tags here to search" name="tagname">&nbsp;
+        <input type="submit" value="Search tag" name="btn" class="btn btn-sm btn-primary">
+        </form>
+    
+    <br><br><hr>
+</div>
 <div class="col-xs-12">
     <table class="table table-striped table-hover">
     <thead>

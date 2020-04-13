@@ -12,8 +12,6 @@ if (isset($_POST['submit']))
     $filename = $_FILES['file1']['name'];
     $ideaname = $_POST['ideaName'];
     $tags = $_POST['tags'];
-    $id = $_POST['id'];
-    
     //upload file
     if($filename != '')
     {
@@ -33,15 +31,15 @@ if (isset($_POST['submit']))
             $sql = "INSERT INTO project_files(ideaName, filename, created, tags) VALUES('$ideaname', '$filename', '$created', '$tags')";
             mysqli_query($con, $sql);
             
-            header("Location: communitypage.php?st=success");
+            header("Location: studentfacultypage.php?st=success");
         }
         else
         {
-            header("Location: communitypage.php?st=error");
+            header("Location: studentfacultypage.php?st=error");
         }
     }
     else {
-           header("Location: communitypage.php");
+           header("Location: studentfacultypage.php");
 
     }
 }
@@ -71,6 +69,7 @@ if( isset($_GET['search']) ){
 }
 $result = $con->query($sql);
 
+
 // fetch tag names
 $tagsql = "select distinct tags from project_files";
 $tagresult = mysqli_query($con, $tagsql);
@@ -80,45 +79,46 @@ if( isset($_GET['tagname']) ){
     $sql = "SELECT * FROM project_files WHERE tags = '$tname'";
 }
 $result = $con->query($sql);
+
+
+
 ?>
 
 
 <div class="container">
-   
     <div class="content">
-			<h2 style="text-align: center; font-weight: bold;">Community or Industry Partners</h2>
+			<h2 style="text-align: center; font-weight: bold;">Student or Faculty</h2>
     </div>
-    
-    <div class="uploadSection">
-            <div class="row">
-                <div class="col-xs-12">
-                <form action="communitypage.php" method="post" enctype="multipart/form-data">
-                    <legend>Project About:</legend><br>
-                    <textarea name="ideaName" required></textarea><br><br>
-                    <legend>Add a tag</legend>
-                    <textarea name="tags" required></textarea><br><br>
-                    <legend>Upload Project Details*</legend><br>
-                    <div class="form-group">
-                        <input type="file" name="file1" required/>
-                    </div><br>
-                    <div class="form-group">
-                        <input type="submit" name="submit" value="Upload" class="btn btn-info"/>
-                    </div>
-                    <?php if(isset($_GET['st'])) { ?>
-                        <div class="alert alert-danger text-center">
-                        <?php if ($_GET['st'] == 'success') {
-                                echo "File Uploaded Successfully!";
-                            }
-                            else
-                            {
-                                echo 'Invalid File Extension!';
-                            } ?>
-                        </div>
-                    <?php } ?>
-                </form>
-                </div>
+<div class="uploadSection">
+<div class="row">
+    <div class="col-xs-12">
+        <form action="studentfacultypage.php" method="post" enctype="multipart/form-data">
+            <legend>Project About:</legend><br>
+            <textarea name="ideaName" required></textarea><br><br>
+            <legend>Add a tag</legend>
+            <textarea name="tags" required></textarea><br><br>
+            <legend>Upload Project Details*</legend><br>
+            <div class="form-group">
+            <input type="file" name="file1" required/>
+            </div><br>
+            <div class="form-group">
+                <input type="submit" name="submit" value="Upload" class="btn btn-info"/>
             </div>
+            <?php if(isset($_GET['st'])) { ?>
+            <div class="alert alert-danger text-center">
+            <?php if ($_GET['st'] == 'success') {
+                echo "File Uploaded Successfully!";
+            }
+            else
+            {
+            echo 'Invalid File Extension!';
+            } ?>
+            </div>
+            <?php } ?>
+         </form>
     </div>
+</div>
+</div>
     
     <div class="uploadSection2" style="background: white;">
         <label>Search Ideas/Projects</label>
@@ -128,8 +128,10 @@ $result = $con->query($sql);
         </form>
     </div>
     
-    <div class="uploadSection2">
-            <div class="row">
+<div class="uploadSection2">
+<div class="row">
+    
+    
                 <div>
                     <table class="table">
                         <h1>Tags</h1>
@@ -148,7 +150,7 @@ $result = $con->query($sql);
                         </tr>
                 -->
                         </thead><br>
-                        <h6><a href="/communitypage.php">clear tag result</a></h6>
+                        <h6><a href="/studentfacultypage.php">clear tag result</a></h6>
                     </table><br>
                         <form action="" method="GET">
                         <input type="text" placeholder="Type above tags here to search" name="tagname">&nbsp;
@@ -156,38 +158,36 @@ $result = $con->query($sql);
                         </form>
 
                     <br><br><hr>
-                </div>
-                  
-                <div class="col-xs-12">
-                    <table class="table table-striped table-responsive">
-                        <thead>
-                            <tr>
-                                <th>SN</th>
-                                <th>Project</th>
-                                <th>File Name</th>
-                                <th>View</th>
-                                <th>Download</th>
-                                <th>Collaboration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $i = 1;
-                        while($row = mysqli_fetch_array($result)) { ?>
-                        <tr>
-                            <td><?php echo $i++; ?></td>
-                            <td><?php echo $row['ideaName']; ?></td>
-                            <td><?php echo $row['filename']; ?></td>
-                            <td><a href="uploads/<?php echo $row['filename']; ?>" target="_blank">View</a></td>
-                            <td><a href="uploads/<?php echo $row['filename']; ?>" download>Download</a></td>
-                            <td><a href="projectcomments.php?id=<?php echo $row['id']; ?>">Add Comment</a></td>
-                        </tr>
-                        <?php } ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                </div>       
+    
+    <div class="col-xs-12">
+        <table class="table table-striped table-responsive">
+        <thead>
+            <tr>
+                <th>SN</th>
+                <th>Project</th>
+                <th>File Name</th>
+                <th>View</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $i = 1;
+            while($row = mysqli_fetch_array($result)) { ?>
+            <tr>
+                <td><?php echo $i++; ?></td>
+                <td><?php echo $row['ideaName']; ?></td>
+                <td><?php echo $row['filename']; ?></td>
+                <td><a href="uploads/<?php echo $row['filename']; ?>" target="_blank">View</a></td>
+                <td><a href="uploads/<?php echo $row['filename']; ?>" download>Download</a></td>
+            </tr>
+            <?php } ?>
+        </tbody>
+        </table>
     </div>
+</div>
+</div>
 </div>
 </body>
 </html>
